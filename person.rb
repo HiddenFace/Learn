@@ -37,6 +37,7 @@ class Person
     def read
       JSON.load(File.read('persons.json'))
     end
+
   end
 
   def initialize(first_name: , last_name:, patronymic:, birthdate:, location:)
@@ -75,19 +76,3 @@ Person.store
 p Person.persons
 p Person.as_json
 p Person.read
-
-# persons = []
-
-# 100.times do
-#   person = Person.new().to_hash
-
-#   persons.push(person)
-# end
-
-# persons.each do |person|
-#   puts person
-# end
-
-# File.open("persons_JSON.json", "w+") do |file|
-#   file.puts(persons.to_json)
-# end
