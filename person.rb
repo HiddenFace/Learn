@@ -31,13 +31,7 @@ class Person
   end
 
   def to_hash
-    [first_name: @first_name, last_name: @last_name, patronymic: @patronymic, birthdate: @birthdate.iso8601, location: @location]
-  end
-
-  def self.from_json(json)
-    data = JSON.parse(json)
-    birthdate = Time.parse(data["birthdate"])
-    new(data["first_name"], data["last_name"], data["patronymic"], birthdate, data["location"])
+    {first_name: @first_name, last_name: @last_name, patronymic: @patronymic, birthdate: @birthdate.iso8601, location: @location}
   end
 
 end
@@ -58,12 +52,6 @@ persons.each do |person|
   puts person
 end
 
-# p1 = Person.new(first_name: Utils.generate_first_name,
-#                       last_name:  Utils.generate_last_name,
-#                       patronymic: Utils.generate_patronymic,
-#                       location:   Utils.generate_location,
-#                       birthdate:  Utils.generate_birthdate)
-# p p1.as_json
 File.open("persons_JSON.json", "w+") do |file|
   file.puts(persons.to_json)
 end
