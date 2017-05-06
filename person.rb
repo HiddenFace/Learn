@@ -11,18 +11,27 @@ class Person
 
     attr_accessor :persons
 
-    def generate(amount:)
-      self.persons = []
-      amount.times do
-        person = self.new(first_name: Utils.generate_first_name,
-                          last_name:  Utils.generate_last_name,
-                          patronymic: Utils.generate_patronymic,
-                          location:   Utils.generate_location,
-                          birthdate:  Utils.generate_birthdate)
+    # def generate(amount:)
+    #   self.persons = []
+    #   amount.times do
+    #     person = self.new(first_name: Utils.generate_first_name,
+    #                       last_name:  Utils.generate_last_name,
+    #                       patronymic: Utils.generate_patronymic,
+    #                       location:   Utils.generate_location,
+    #                       birthdate:  Utils.generate_birthdate)
 
-        self.persons.push(person)
-      end
+    #     self.persons.push(person)
+    #   end
+    # end
+
+  def all
+    Person.read.each do |_person|
+    _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
+    _person = Person.new(_person)
+    persons.push(_person)
     end
+
+  end
 
     def as_json
       self.persons.map(&:to_hash).to_json
@@ -69,10 +78,14 @@ class Person
   end
 
 end
+# persons = []
+# Person.read.each do |_person|
+# _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
+# _person = Person.new(_person)
+#  persons.push(_person)
+# end
+# Person.store
 
-Person.generate(amount: 100)
-Person.store
-
-p Person.persons
-p Person.as_json
-p Person.read
+# p Person.persons
+# p Person.as_json
+# p Person.read
