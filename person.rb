@@ -24,14 +24,27 @@ class Person
     #   end
     # end
 
-  def all
-    Person.read.each do |_person|
-    _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
-    _person = Person.new(_person)
-    persons.push(_person)
+    def all
+      self.persons = []
+      if self.persons.empty? == true
+        Person.read.each do |_person|
+        _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
+        _person[:birthdate] = Time.parse(_person[:birthdate])
+        self.persons.push(Person.new(_person))
+        end
+      else self.persons.empty? == false
+      self.persons
+      end
+      self.persons
     end
 
-  end
+    def select
+      sorting = []
+      self.persons.each do |_person|
+        _person[:first_name] == 'Станимир'
+        self.sorting.push(Person.new(_person))
+      end
+    end
 
     def as_json
       self.persons.map(&:to_hash).to_json
@@ -89,3 +102,6 @@ end
 # p Person.persons
 # p Person.as_json
 # p Person.read
+Person.select.each do |person|
+  puts person.details
+end
