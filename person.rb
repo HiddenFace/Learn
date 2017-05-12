@@ -6,46 +6,29 @@ class Person
 
   attr_accessor :first_name, :last_name, :patronymic, :birthdate, :location
 
-
   class << self
 
     attr_accessor :persons
 
-    # def generate(amount:)
-    #   self.persons = []
-    #   amount.times do
-    #     person = self.new(first_name: Utils.generate_first_name,
-    #                       last_name:  Utils.generate_last_name,
-    #                       patronymic: Utils.generate_patronymic,
-    #                       location:   Utils.generate_location,
-    #                       birthdate:  Utils.generate_birthdate)
+    def all
+      self.persons ||= []
+      return self.persons unless self.persons.empty?
 
-    #     self.persons.push(person)
-    #   end
-    # end
+      Person.read.each do |person|
+        person = person.inject({}){ |save, (attribute, value)| save[attribute.to_sym] = value; save}
+        person[:birthdate] = Time.parse(person[:birthdate])
+        self.persons << Person.new(person)
+      end
 
-  def all
-    self.persons = []
-    if self.persons.empty? == true
-      Person.read.each do |_person|
-      _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
-      _person[:birthdate] = Time.parse(_person[:birthdate])
-      self.persons.push(Person.new(_person))
+      self.persons
+    end
+
+    def select(first_name:)
+      self.persons || self.all
+      self.persons.select do |person|
+        person.first_name == first_name
       end
     end
-    self.persons
-  end
-
-  def select(name)
-    sorting = []
-    self.all
-    self.persons.each do |_person|
-      if _person.first_name == name
-        sorting.push(_person)
-      end
-    end
-    sorting
-  end
 
     def as_json
       self.persons.map(&:to_hash).to_json
@@ -76,7 +59,7 @@ class Person
   end
 
   def age
-    age = (Time.now.to_i - self.birthdate.to_i)/60/60/24/365
+    age = (Time.now.to_i - self.birthdate.to_i) / 60 / 60 / 24 / 365
   end
 
   def details
@@ -92,18 +75,8 @@ class Person
   end
 
 end
-# persons = []
-# Person.read.each do |_person|
-# _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
-# _person = Person.new(_person)
-#  persons.push(_person)
-# end
-# Person.store
 
-# p Person.persons
-# p Person.as_json
-# p Person.read
-Person.select('Станимир').each do |person|
-  puts person.details
-end
+puts Person.select(first_name: 'Станимир').map(&:details)
+puts Person.select(first_name: 'Владислав').map(&:details)
+puts Person.select(first_name: 'Станислав').map(&:details)
 
