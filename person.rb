@@ -36,16 +36,23 @@ class Person
     self.persons
   end
 
-  def select(name)
-    sorting = []
-    self.all
-    self.persons.each do |_person|
-      if _person.first_name == name
-        sorting.push(_person)
+  # def select(first_name:, last_name:)
+  #   sorting = []
+  #   self.all
+  #   self.persons.each do |_person|
+  #     if _person.first_name == name
+  #       sorting.push(_person)
+  #     end
+  #   end
+  #   sorting
+  # end
+  def select(first_name:, last_name:)
+      self.persons || self.all
+      self.persons.select do |person|
+        person.first_name == first_name && person.last_name == last_name
       end
-    end
-    sorting
   end
+
 
     def as_json
       self.persons.map(&:to_hash).to_json
@@ -103,7 +110,12 @@ end
 # p Person.persons
 # p Person.as_json
 # p Person.read
-Person.select('Станимир').each do |person|
-  puts person.details
-end
+# Person.select('Станимир').each do |person|
+#   puts person.details
+# end
 
+# Необходимо расширить метод select, чтобы мы могли искать по first_name и last_name одновременно.
+# Валидным результатом является совпадение по имени и фамилии одновременно.
+puts Person.select(first_name: 'Милан', last_name: 'Веселов').map(&:details)
+puts Person.select(first_name: 'Хуй', last_name: 'Моржовый').map(&:details)
+puts Person.select(first_name: 'Милан', last_name: 'Орлов').map(&:details)
