@@ -11,18 +11,48 @@ class Person
 
     attr_accessor :persons
 
-    def generate(amount:)
-      self.persons = []
-      amount.times do
-        person = self.new(first_name: Utils.generate_first_name,
-                          last_name:  Utils.generate_last_name,
-                          patronymic: Utils.generate_patronymic,
-                          location:   Utils.generate_location,
-                          birthdate:  Utils.generate_birthdate)
+    # def generate(amount:)
+    #   self.persons = []
+    #   amount.times do
+    #     person = self.new(first_name: Utils.generate_first_name,
+    #                       last_name:  Utils.generate_last_name,
+    #                       patronymic: Utils.generate_patronymic,
+    #                       location:   Utils.generate_location,
+    #                       birthdate:  Utils.generate_birthdate)
 
-        self.persons.push(person)
+    #     self.persons.push(person)
+    #   end
+    # end
+
+  def all
+    self.persons = []
+    if self.persons.empty? == true
+      Person.read.each do |_person|
+      _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
+      _person[:birthdate] = Time.parse(_person[:birthdate])
+      self.persons.push(Person.new(_person))
       end
     end
+    self.persons
+  end
+
+  # def select(first_name:, last_name:)
+  #   sorting = []
+  #   self.all
+  #   self.persons.each do |_person|
+  #     if _person.first_name == name
+  #       sorting.push(_person)
+  #     end
+  #   end
+  #   sorting
+  # end
+  def select(first_name:, last_name:)
+      self.persons || self.all
+      self.persons.select do |person|
+        person.first_name == first_name && person.last_name == last_name
+      end
+  end
+
 
     def as_json
       self.persons.map(&:to_hash).to_json
@@ -69,10 +99,23 @@ class Person
   end
 
 end
+# persons = []
+# Person.read.each do |_person|
+# _person = _person.inject({}){ |memo, (k, v)| memo[k.to_sym] = v; memo}
+# _person = Person.new(_person)
+#  persons.push(_person)
+# end
+# Person.store
 
-Person.generate(amount: 100)
-Person.store
+# p Person.persons
+# p Person.as_json
+# p Person.read
+# Person.select('Станимир').each do |person|
+#   puts person.details
+# end
 
-p Person.persons
-p Person.as_json
-p Person.read
+# Необходимо расширить метод select, чтобы мы могли искать по first_name и last_name одновременно.
+# Валидным результатом является совпадение по имени и фамилии одновременно.
+puts Person.select(first_name: 'Милан', last_name: 'Веселов').map(&:details)
+puts Person.select(first_name: 'Хуй', last_name: 'Моржовый').map(&:details)
+puts Person.select(first_name: 'Милан', last_name: 'Орлов').map(&:details)
